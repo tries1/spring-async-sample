@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LoadTest {
     public static void main(String[] args) throws Exception {
         AtomicInteger ai = new AtomicInteger(1);
+        AtomicInteger successCount = new AtomicInteger(0);
         RestTemplate rt = new RestTemplate();
         ExecutorService es = Executors.newFixedThreadPool(100);
         CyclicBarrier cb = new CyclicBarrier(101);
@@ -26,7 +27,9 @@ public class LoadTest {
 
                     StopWatch sw = new StopWatch();
                     sw.start();
-                    rt.getForObject("http://localhost:8080/nonblock2?req={req}", String.class, idx);
+                    //rt.getForObject("http://localhost:8080/nonblock3?req={req}", String.class, idx);
+                    rt.getForObject("http://localhost:8080/cf/sample2", String.class, idx);
+                    successCount.incrementAndGet();
                     sw.stop();
                     log.info("Elapsed: idx : {}, Sec : {}", idx, sw.getTotalTimeSeconds());
                 } catch (Exception e) {
@@ -43,6 +46,6 @@ public class LoadTest {
         es.awaitTermination(100, TimeUnit.SECONDS);
 
         main.stop();
-        log.info("Running Sec : {}", main.getTotalTimeSeconds());
+        log.info("Running Sec : {}, Success Count : {}", main.getTotalTimeSeconds(), successCount);
     }
 }

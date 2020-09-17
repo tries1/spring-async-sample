@@ -1,19 +1,19 @@
 package com.example.springasyncsample.controller;
 
+import com.example.springasyncsample.service.MyService;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.http.client.Netty4ClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class NonBlockingController {
     private final MyService myService;
     RestTemplate rt = new RestTemplate();
-    AsyncRestTemplate art = new AsyncRestTemplate();
+    AsyncRestTemplate art = new AsyncRestTemplate(new Netty4ClientHttpRequestFactory(new NioEventLoopGroup(1)));
 
     @GetMapping("block1")
     public String block1(String req) {
@@ -34,22 +34,13 @@ public class NonBlockingController {
     }
 
     @GetMapping("nonblock2")
-    public String nonblock2() throws ExecutionException, InterruptedException {
-        return myService.block().get();
+    public String nonblock2() {
+        myService.async();
+        return "hello";
     }
 
-
-    @Service
-    public static class MyService {
-        @Async
-        public Future<String> block() {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            return new AsyncResult<>("hello");
-        }
+    @GetMapping("nonblock3")
+    public Future<String> nonblock3() {
+        return new AsyncResult<>(myService.block());
     }
 }
