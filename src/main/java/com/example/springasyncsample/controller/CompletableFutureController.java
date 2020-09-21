@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.RequiredArgsConstructor;
@@ -46,12 +47,18 @@ public class CompletableFutureController {
         List<CompletableFuture<String>> cfList = Arrays.asList(cf1, cf2, cf3);
 
         CompletableFuture.allOf(cf1, cf2, cf3)
-        .thenAccept(aVoid -> dr.setResult(cfList.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.joining(", ")))
-        );
+                .thenAccept(aVoid -> dr.setResult(cfList.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.joining(", ")))
+                );
 
         return dr;
+    }
+
+    <T> CompletableFuture<T> toCF(ListenableFuture<T> lf) {
+        CompletableFuture<T> cf = new CompletableFuture<>();
+        lf.addCallback(it -> cf.complete(it), e -> cf.completeExceptionally(e));
+        return cf;
     }
 
     //non-blocking이 아님, 별도의 스레드에서 수행할뿐
@@ -73,9 +80,27 @@ public class CompletableFutureController {
         return dr;
     }
 
-    <T> CompletableFuture<T> toCF(ListenableFuture<T> lf) {
-        CompletableFuture<T> cf = new CompletableFuture<>();
-        lf.addCallback(it -> cf.complete(it), e -> cf.completeExceptionally(e));
-        return cf;
+
+    @GetMapping("sample3")
+    public String sample3() {
+        List<CompletableFuture<String>> cfList = IntStream.rangeClosed(1, 100)
+                .mapToObj(i -> CompletableFuture.supplyAsync(() -> block(i)))
+                .collect(Collectors.toList());
+
+        return cfList.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.joining(", "));
+    }
+
+    private String block(int i) {
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        log.info("i : {}", i);
+
+        return i + "";
     }
 }
