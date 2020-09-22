@@ -8,10 +8,10 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-public class BlockingController {
+public class BlockingSomeApiController {
     private final RestTemplate rt;
 
-    @GetMapping("block1")
+    //@GetMapping("block1")
     public String block1(String req) {
         return rt.getForObject("http://localhost:8081/some-api1?req={req}", String.class, req);
     }

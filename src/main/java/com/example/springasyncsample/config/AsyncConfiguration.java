@@ -2,13 +2,15 @@ package com.example.springasyncsample.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
+@EnableAsync
 @Configuration
 public class AsyncConfiguration /*implements AsyncConfigurer*/ {
-    private final int THREAD_POOL_SIZE = 5;
+    private final int THREAD_POOL_SIZE = 1;
 
     /*@Override
     public Executor getAsyncExecutor() {

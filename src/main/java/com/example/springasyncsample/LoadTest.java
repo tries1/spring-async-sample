@@ -27,8 +27,9 @@ public class LoadTest {
 
                     StopWatch sw = new StopWatch();
                     sw.start();
-                    //rt.getForObject("http://localhost:8080/nonblock3?req={req}", String.class, idx);
-                    rt.getForObject("http://localhost:8081/some-async-api2", String.class, idx);
+                    //rt.getForObject("http://localhost:8080/async-annotation/block-api", String.class);
+                    rt.getForObject("http://localhost:8080/async-annotation/async-api3", String.class);
+                    //rt.getForObject("http://localhost:8081/some-async-api2", String.class, idx);
                     //rt.getForObject("http://localhost:8081/some-block-api", String.class, idx);
                     successCount.incrementAndGet();
                     sw.stop();
