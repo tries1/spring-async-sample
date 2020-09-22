@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 public class NonBlockingController {
-    private final MyService myService;
     RestTemplate rt = new RestTemplate();
     AsyncRestTemplate art = new AsyncRestTemplate(new Netty4ClientHttpRequestFactory(new NioEventLoopGroup(1)));
 
@@ -31,16 +30,5 @@ public class NonBlockingController {
     @GetMapping("nonblock1")
     public ListenableFuture<ResponseEntity<String>> nonblock1(String req) {
         return art.getForEntity("http://localhost:8081/block?req={req}", String.class, req);
-    }
-
-    @GetMapping("nonblock2")
-    public String nonblock2() {
-        myService.async();
-        return "hello";
-    }
-
-    @GetMapping("nonblock3")
-    public Future<String> nonblock3() {
-        return new AsyncResult<>(myService.block());
     }
 }
