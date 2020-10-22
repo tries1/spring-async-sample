@@ -14,12 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LoadTest {
     public static void main(String[] args) throws Exception {
+        final Integer RUNNER = 100;
         AtomicInteger ai = new AtomicInteger(1);
         AtomicInteger successCount = new AtomicInteger(0);
         RestTemplate rt = new RestTemplate();
-        ExecutorService es = Executors.newFixedThreadPool(100);
-        CyclicBarrier cb = new CyclicBarrier(101);
-        for (int i = 1; i <= 100; i++) {
+        ExecutorService es = Executors.newFixedThreadPool(RUNNER);
+        CyclicBarrier cb = new CyclicBarrier(RUNNER + 1);
+        for (int i = 1; i <= RUNNER; i++) {
             es.execute(() -> {
                 try {
                     int idx = ai.getAndIncrement();
@@ -27,10 +28,7 @@ public class LoadTest {
 
                     StopWatch sw = new StopWatch();
                     sw.start();
-                    //rt.getForObject("http://localhost:8080/async-annotation/block-api", String.class);
-                    rt.getForObject("http://localhost:8080/async-annotation/async-api3", String.class);
-                    //rt.getForObject("http://localhost:8081/some-async-api2", String.class, idx);
-                    //rt.getForObject("http://localhost:8081/some-block-api", String.class, idx);
+                    rt.getForObject("http://localhost:8080/block/sample-api", String.class);
                     successCount.incrementAndGet();
                     sw.stop();
                     log.info("Elapsed: idx : {}, Sec : {}", idx, sw.getTotalTimeSeconds());
