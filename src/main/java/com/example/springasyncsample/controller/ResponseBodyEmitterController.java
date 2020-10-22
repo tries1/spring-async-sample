@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class ResponseBodyEmitterController {
 
-    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/events")
     public ResponseBodyEmitter sample1() {
         ResponseBodyEmitter emitter = new ResponseBodyEmitter();
 

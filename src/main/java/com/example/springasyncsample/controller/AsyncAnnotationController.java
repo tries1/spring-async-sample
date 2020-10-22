@@ -38,9 +38,9 @@ public class AsyncAnnotationController {
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @Scheduled(cron = "* * * * * *")
-    public void Scheduled() {
-        log.info("Scheduled, flag : {},  Queue Size : {}", flag, drQueue.size());
+    //@Scheduled(cron = "* * * * * *")
+    public void deferredResultScheduled() {
+        log.info("DeferredResult Scheduled, flag : {},  Queue Size : {}", flag, drQueue.size());
 
         if (flag) {
             flag = false;
